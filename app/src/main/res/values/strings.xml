@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">EchoServerComplete</string>
+    <string name="wifi_direct_disconnected">WiFi Direct - Disconnected</string>
+    <string name="create_group">Create Group</string>
+    <string name="wifi_direct_error">WiFi Direct - Error</string>
+    <string name="it_seems_your_wifi_direct_adapter_is_off_please_ensure_that_you_turn_on_wifi_in_your_settings">It seems your WiFi Direct Adapter is off. Please ensure that you turn ON WiFI in your settings!</string>
+    <string name="send">Send</string>
+    <string name="discover_nearby">Discover Nearby</string>
+    <string name="enter_message">Enter message...</string>
+    <string name="Start_Class">Start Class</string>
+    <string name="Teacher">Teacher</string>
 </resources>
