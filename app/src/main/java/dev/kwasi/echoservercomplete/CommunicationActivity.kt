@@ -1,6 +1,7 @@
 package dev.kwasi.echoservercomplete
 
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pGroup
@@ -87,8 +88,14 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
     }
 
     fun startClass(view: View) {
+        // Create the WiFi Direct group
         wfdManager?.createGroup()
+
+        // Start the LecturerActivity to display the lecturer screen
+        val intent = Intent(view.context, LecturerActivity::class.java)
+        view.context.startActivity(intent)
     }
+
 
     private fun updateUI() {
         //The rules for updating the UI are as follows:
@@ -133,7 +140,7 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
             "$text disabled! Try turning on the WiFi adapter"
         }
 
-        val toast = Toast.makeText(this, text, Toast.LENGTH_SHORT)
+        val toast = Toast.makeText(this, text, Toast.LENGTH_LONG)
         toast.show()
         updateUI()
     }
