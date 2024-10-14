@@ -1,16 +1,17 @@
 package dev.kwasi.echoservercomplete
 
 import android.content.Context
-import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pGroup
 import android.net.wifi.p2p.WifiP2pManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
@@ -87,13 +88,15 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun startClass(view: View) {
         // Create the WiFi Direct group
-        wfdManager?.createGroup()
-
+        if (wfdManager?.requestGroupInfo() == null)
+            wfdManager?.createGroup()
         // Start the LecturerActivity to display the lecturer screen
-        val intent = Intent(view.context, LecturerActivity::class.java)
-        view.context.startActivity(intent)
+
+//        val intent = Intent(view.context, LecturerActivity::class.java)
+//        view.context.startActivity(intent)
     }
 
 
