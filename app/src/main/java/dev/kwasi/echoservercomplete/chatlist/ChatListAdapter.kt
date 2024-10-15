@@ -1,21 +1,17 @@
 package dev.kwasi.echoservercomplete.chatlist
 
-import android.annotation.SuppressLint
-import android.net.wifi.p2p.WifiP2pDevice
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import dev.kwasi.echoservercomplete.R
 import dev.kwasi.echoservercomplete.models.ContentModel
-import dev.kwasi.echoservercomplete.peerlist.PeerListAdapter
 
-class ChatListAdapter : RecyclerView.Adapter<ChatListAdapter.ViewHolder>(){
-    private val chatList:MutableList<ContentModel> = mutableListOf()
+class ChatListAdapter : RecyclerView.Adapter<ChatListAdapter.ViewHolder>() {
+    private val chatList: MutableList<ContentModel> = mutableListOf()
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val messageView: TextView = itemView.findViewById(R.id.messageTextView)
@@ -28,7 +24,8 @@ class ChatListAdapter : RecyclerView.Adapter<ChatListAdapter.ViewHolder>(){
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val chat = chatList[position]
-        (holder.messageView.parent as RelativeLayout).gravity = if (chat.senderIp=="192.168.49.1") Gravity.START else Gravity.END
+        (holder.messageView.parent as RelativeLayout).gravity =
+            if (chat.senderIp == "192.168.49.1") Gravity.START else Gravity.END
         holder.messageView.text = chat.message
 
     }
@@ -37,7 +34,7 @@ class ChatListAdapter : RecyclerView.Adapter<ChatListAdapter.ViewHolder>(){
         return chatList.size
     }
 
-    fun addItemToEnd(contentModel: ContentModel){
+    fun addItemToEnd(contentModel: ContentModel) {
         chatList.add(contentModel)
         notifyItemInserted(chatList.size)
     }

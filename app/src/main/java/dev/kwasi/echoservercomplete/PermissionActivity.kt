@@ -30,16 +30,16 @@ class PermissionActivity : AppCompatActivity() {
 
         // If we do not have our permissions, we need to request them. Create an array of the permissions we want,
         // then send a request to the android OS
-        if (!hasAllPermissions()){
+        if (!hasAllPermissions()) {
             var perm = arrayOf(
                 Manifest.permission.ACCESS_WIFI_STATE,
                 Manifest.permission.CHANGE_WIFI_STATE,
                 Manifest.permission.INTERNET,
                 Manifest.permission.ACCESS_FINE_LOCATION,
             )
-            if (SDK_INT >= 33){
+            if (SDK_INT >= 33) {
                 // Android 13 (API 33) requires the NEARBY_WIFI_DEVICES permission
-                perm +=Manifest.permission.NEARBY_WIFI_DEVICES
+                perm += Manifest.permission.NEARBY_WIFI_DEVICES
             }
 
             ActivityCompat.requestPermissions(this, perm, requestCode)
@@ -51,19 +51,22 @@ class PermissionActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (hasAllPermissions()){
+        if (hasAllPermissions()) {
             navigateToNextPage()
         }
     }
 
-    private fun hasAllPermissions():Boolean{
-        var perm = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED &&
-                checkSelfPermission(Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED
-        if (SDK_INT >= 33){
+    private fun hasAllPermissions(): Boolean {
+        var perm =
+            checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(
+                Manifest.permission.ACCESS_WIFI_STATE
+            ) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED && checkSelfPermission(
+                Manifest.permission.INTERNET
+            ) == PackageManager.PERMISSION_GRANTED
+        if (SDK_INT >= 33) {
             // If we're running on android SDK 33 or higher, we also need the NEARBY_WIFI_DEVICES permission
-            perm = perm && checkSelfPermission(Manifest.permission.NEARBY_WIFI_DEVICES) == PackageManager.PERMISSION_GRANTED
+            perm =
+                perm && checkSelfPermission(Manifest.permission.NEARBY_WIFI_DEVICES) == PackageManager.PERMISSION_GRANTED
         }
         return perm
     }
@@ -71,24 +74,23 @@ class PermissionActivity : AppCompatActivity() {
     /// This function is called by the OS itself after the user interacts with the permissions popups.
     /// We need to iterate through each of the permissions we requested and make sure that ALL are granted.
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
-        when(requestCode){
+        when (requestCode) {
             this.requestCode -> {
-                if (hasAllPermissions()){
+                if (hasAllPermissions()) {
                     navigateToNextPage()
                 }
             }
+
             else -> {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
     }
 
-    private fun navigateToNextPage(){
-        val i = Intent(this,CommunicationActivity::class.java)
+    private fun navigateToNextPage() {
+        val i = Intent(this, CommunicationActivity::class.java)
         i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         startActivity(i)
     }

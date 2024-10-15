@@ -1,26 +1,25 @@
-package dev.kwasi.echoservercomplete
-
 import android.content.Context
+import android.content.Intent
 import android.net.wifi.p2p.WifiP2pDevice
-import android.net.wifi.p2p.WifiP2pGroup
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import dev.kwasi.echoservercomplete.CommunicationActivity
+import dev.kwasi.echoservercomplete.R
+import dev.kwasi.echoservercomplete.chat.ChatActivity
+import dev.kwasi.echoservercomplete.peerlist.PeerListAdapter
+import dev.kwasi.echoservercomplete.peerlist.PeerListAdapterInterface
 
-class LecturerActivity : AppCompatActivity() {
-
-    // Define a hardcoded set of valid student IDs
-    private val validStudentIDs = setOf("ID001", "ID002", "ID003")
+class LecturerActivity : AppCompatActivity(), PeerListAdapterInterface {
 
     private lateinit var wifiP2pManager: WifiP2pManager
     private lateinit var channel: WifiP2pManager.Channel
-    private lateinit var attendeesListView: ListView
-    private val attendeesList = ArrayList<String>()
-    private lateinit var adapter: ArrayAdapter<String>
+    private lateinit var attendeesListView: RecyclerView
+    private lateinit var adapter: PeerListAdapter
+    private val attendeesList = ArrayList<WifiP2pDevice>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,46 +29,43 @@ class LecturerActivity : AppCompatActivity() {
         wifiP2pManager = getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
         channel = wifiP2pManager.initialize(this, mainLooper, null)
 
+        // Set up RecyclerView for Attendees List
         attendeesListView = findViewById(R.id.attendeesList)
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, attendeesList)
+        attendeesListView.layoutManager = LinearLayoutManager(this)
+        adapter = PeerListAdapter(this)  // No need to pass the list here; it’s managed internally
         attendeesListView.adapter = adapter
-
-        // Set up the End Class button functionality
-        findViewById<Button>(R.id.endClassButton).setOnClickListener {
-            endClass()
-        }
     }
 
-    // Function to handle student connections
-    private fun onStudentConnect(studentID: String) {
-        if (validStudentIDs.contains(studentID)) {
-            // Add student to the list if ID is valid
-            attendeesList.add(studentID)
-            adapter.notifyDataSetChanged()
-        } else {
-            // Handle invalid student ID
-            Toast.makeText(this, "Unauthorized student", Toast.LENGTH_SHORT).show()
-        }
+    override fun onPeerClicked(peer: WifiP2pDevice) {
+        // Open ChatActivity and pass the attendee's device address
+        val intent = Intent(this, ChatActivity::class.java)
+        intent.putExtra("ATTENDEE_DEVICE_ADDRESS", peer.deviceAddress)
+        startActivity(intent)
+    }
+
+    private fun addAttendee(attendee: WifiP2pDevice) {
+        attendeesList.add(attendee)         // Add WifiP2pDevice object to list
+        adapter.updateList(attendeesList)   // Update adapter with new list
     }
 
     private fun endClass() {
-        // Remove the group
         wifiP2pManager.removeGroup(channel, object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
                 Toast.makeText(
-                    this@LecturerActivity,
-                    "Class ended successfully.",
-                    Toast.LENGTH_SHORT
+                    this@LecturerActivity, "Class ended successfully.", Toast.LENGTH_SHORT
                 ).show()
-                attendeesList.clear() // Clear the list of attendees
-                adapter.notifyDataSetChanged() // Update the list view
+                attendeesList.clear()
+                adapter.updateList(attendeesList)  // Clear the adapter list as well
+
+                // Navigate back to CommunicationActivity
+                val intent = Intent(this@LecturerActivity, CommunicationActivity::class.java)
+                startActivity(intent)
+                finish() // Close LecturerActivity
             }
 
             override fun onFailure(reason: Int) {
                 Toast.makeText(
-                    this@LecturerActivity,
-                    "Failed to end class: $reason",
-                    Toast.LENGTH_SHORT
+                    this@LecturerActivity, "Failed to end class: $reason", Toast.LENGTH_SHORT
                 ).show()
             }
         })

@@ -1,17 +1,16 @@
 package dev.kwasi.echoservercomplete
 
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pGroup
 import android.net.wifi.p2p.WifiP2pManager
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
@@ -88,15 +87,14 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     fun startClass(view: View) {
         // Create the WiFi Direct group
-        if (wfdManager?.requestGroupInfo() == null)
-            wfdManager?.createGroup()
+        when {
+            wfdManager?.requestGroupInfo() == null -> {}
+        }
         // Start the LecturerActivity to display the lecturer screen
-
-//        val intent = Intent(view.context, LecturerActivity::class.java)
-//        view.context.startActivity(intent)
+        val intent = Intent(view.context, LecturerActivity::class.java)
+        view.context.startActivity(intent)
     }
 
 
@@ -131,7 +129,6 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
         etMessage.text.clear()
         client?.sendMessage(content)
         chatListAdapter?.addItemToEnd(content)
-
     }
 
     override fun onWiFiDirectStateChanged(isEnabled: Boolean) {
@@ -150,9 +147,7 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
 
     override fun onPeerListUpdated(deviceList: Collection<WifiP2pDevice>) {
         val toast = Toast.makeText(
-            this,
-            "Updated listing of nearby WiFi Direct devices",
-            Toast.LENGTH_SHORT
+            this, "Updated listing of nearby WiFi Direct devices", Toast.LENGTH_SHORT
         )
         toast.show()
         hasDevices = deviceList.isNotEmpty()

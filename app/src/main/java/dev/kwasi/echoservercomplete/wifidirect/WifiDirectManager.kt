@@ -84,14 +84,10 @@ class WifiDirectManager(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission") //This is the new create group function
     fun requestGroupInfo() {
         manager.requestGroupInfo(channel) { groupInfo ->
             if (groupInfo == null) {
-                val config =
-                    WifiP2pConfig.Builder().setNetworkName("DIRECT-gg").setPassphrase("123456789")
-                        .enablePersistentMode(false).build()
                 // No group exists, so we can create a new one
                 manager.createGroup(channel, object : ActionListener {
                     override fun onSuccess() {
@@ -106,51 +102,6 @@ class WifiDirectManager(
                 Log.d("WFDManager", "A group already exists. No need to create a new one.")
             }
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    @SuppressLint("MissingPermission")
-    fun createGroup() {
-        val config = WifiP2pConfig.Builder().setNetworkName("DIRECT-gg").setPassphrase("123456789")
-            .enablePersistentMode(false).build()
-
-        manager.createGroup(channel, object : ActionListener {
-            override fun onSuccess() {
-                Log.d("WiFiDirect", "Group created successfully")
-                // Handle success
-            }
-
-            override fun onFailure(reason: Int) {
-                Log.e("WiFiDirect", "Failed to create group: $reason")
-                // Handle failure
-            }
-        })
-    }
-
-    fun cancelConnect() {
-        manager.cancelConnect(channel, object : ActionListener {
-            override fun onSuccess() {
-                Log.d("WFDManager", "Successfully canceled ongoing connection.")
-            }
-
-            override fun onFailure(reason: Int) {
-                Log.e("WFDManager", "Failed to cancel ongoing connection: $reason")
-            }
-        })
-
-    }
-
-    fun removeGroup() {
-        manager.removeGroup(channel, object : ActionListener {
-            override fun onSuccess() {
-                Log.d("WFDManager", "Successfully removed existing group.")
-            }
-
-            override fun onFailure(reason: Int) {
-                Log.e("WFDManager", "Failed to remove existing group: $reason")
-            }
-        })
-
     }
 
     @SuppressLint("MissingPermission")

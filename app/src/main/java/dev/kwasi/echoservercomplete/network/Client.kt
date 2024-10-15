@@ -8,11 +8,11 @@ import java.io.BufferedWriter
 import java.net.Socket
 import kotlin.concurrent.thread
 
-class Client (private val networkMessageInterface: NetworkMessageInterface){
+class Client(private val networkMessageInterface: NetworkMessageInterface) {
     private lateinit var clientSocket: Socket
     private lateinit var reader: BufferedReader
     private lateinit var writer: BufferedWriter
-    var ip:String = ""
+    var ip: String = ""
 
     init {
         thread {
@@ -20,14 +20,15 @@ class Client (private val networkMessageInterface: NetworkMessageInterface){
             reader = clientSocket.inputStream.bufferedReader()
             writer = clientSocket.outputStream.bufferedWriter()
             ip = clientSocket.inetAddress.hostAddress!!
-            while(true){
-                try{
+            while (true) {
+                try {
                     val serverResponse = reader.readLine()
-                    if (serverResponse != null){
-                        val serverContent = Gson().fromJson(serverResponse, ContentModel::class.java)
+                    if (serverResponse != null) {
+                        val serverContent =
+                            Gson().fromJson(serverResponse, ContentModel::class.java)
                         networkMessageInterface.onContent(serverContent)
                     }
-                } catch(e: Exception){
+                } catch (e: Exception) {
                     Log.e("CLIENT", "An error has occurred in the client")
                     e.printStackTrace()
                     break
@@ -36,19 +37,19 @@ class Client (private val networkMessageInterface: NetworkMessageInterface){
         }
     }
 
-    fun sendMessage(content: ContentModel){
+    fun sendMessage(content: ContentModel) {
         thread {
-            if (!clientSocket.isConnected){
+            if (!clientSocket.isConnected) {
                 throw Exception("We aren't currently connected to the server!")
             }
-            val contentAsStr:String = Gson().toJson(content)
+            val contentAsStr: String = Gson().toJson(content)
             writer.write("$contentAsStr\n")
             writer.flush()
         }
 
     }
 
-    fun close(){
+    fun close() {
         clientSocket.close()
     }
 }
