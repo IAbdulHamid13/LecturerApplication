@@ -27,20 +27,27 @@
         <activity
             android:name=".CommunicationActivity"
             android:exported="false" />
-
         <activity
+            android:name=".LecturerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".chat.ChatActivity"
+            android:exported="false">
+
+        </activity>
+        <activity
+
             android:name=".PermissionActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <!-- Add your LecturerActivity here -->
-        <activity
-            android:name=".LecturerActivity"
-            android:exported="false" />
+
 
     </application>
 

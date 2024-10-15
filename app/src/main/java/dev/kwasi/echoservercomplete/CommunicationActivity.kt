@@ -89,14 +89,13 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
 
     fun startClass(view: View) {
         // Create the WiFi Direct group
-        when {
-            wfdManager?.requestGroupInfo() == null -> {}
+        if (wfdManager?.requestGroupInfo() == null) {
+            ;
         }
         // Start the LecturerActivity to display the lecturer screen
-        val intent = Intent(view.context, LecturerActivity::class.java)
-        view.context.startActivity(intent)
+        val intent = Intent(this, LecturerActivity::class.java)
+        startActivity(intent)
     }
-
 
     private fun updateUI() {
         //The rules for updating the UI are as follows:
