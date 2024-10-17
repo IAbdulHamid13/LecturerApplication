@@ -103,7 +103,7 @@ class WifiDirectManager(
             }
         }
     }
-
+ 
     @SuppressLint("MissingPermission")
     fun connectToPeer(peer: WifiP2pDevice) {
         val config = WifiP2pConfig()
