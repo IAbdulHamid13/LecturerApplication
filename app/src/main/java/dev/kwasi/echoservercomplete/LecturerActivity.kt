@@ -52,9 +52,7 @@ class LecturerActivity : AppCompatActivity(), PeerListAdapterInterface {
 
             override fun onFailure(reason: Int) {
                 Toast.makeText(
-                    this@LecturerActivity,
-                    "Peer discovery failed: $reason",
-                    Toast.LENGTH_SHORT
+                    this@LecturerActivity, "Peer discovery failed: $reason", Toast.LENGTH_SHORT
                 ).show()
             }
         })
@@ -94,8 +92,7 @@ class LecturerActivity : AppCompatActivity(), PeerListAdapterInterface {
         super.onResume()
         // Register the BroadcastReceiver
         registerReceiver(
-            wifiP2pReceiver,
-            IntentFilter(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
+            wifiP2pReceiver, IntentFilter(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
         )
         // Start peer discovery
         wifiP2pManager.discoverPeers(channel, object : WifiP2pManager.ActionListener {
