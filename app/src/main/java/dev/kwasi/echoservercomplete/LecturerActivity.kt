@@ -13,20 +13,39 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import dev.kwasi.echoservercomplete.chat.ChatActivity
+import dev.kwasi.echoservercomplete.chatlist.ChatListAdapter
+import dev.kwasi.echoservercomplete.models.ContentModel
+import dev.kwasi.echoservercomplete.network.Client
+import dev.kwasi.echoservercomplete.network.NetworkMessageInterface
+import dev.kwasi.echoservercomplete.network.Server
 import dev.kwasi.echoservercomplete.peerlist.PeerListAdapter
 import dev.kwasi.echoservercomplete.peerlist.PeerListAdapterInterface
+import dev.kwasi.echoservercomplete.wifidirect.WifiDirectManager
 
-class LecturerActivity : AppCompatActivity(), PeerListAdapterInterface {
+class LecturerActivity : AppCompatActivity(), PeerListAdapterInterface, NetworkMessageInterface {
 
     private lateinit var wifiP2pManager: WifiP2pManager
     private lateinit var channel: WifiP2pManager.Channel
     private lateinit var attendeesListView: RecyclerView
     private lateinit var adapter: PeerListAdapter
     private val attendeesList = ArrayList<WifiP2pDevice>()
+    private var wfdManager: WifiDirectManager? = null
 
+    private val intentFilter = IntentFilter().apply {
+        addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)
+        addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
+        addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
+        addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
+    }
+
+    private var chatListAdapter: ChatListAdapter? = null
+
+    private var wfdAdapterEnabled = false
+    private var wfdHasConnection = false
+    private var hasDevices = false
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,11 +133,36 @@ class LecturerActivity : AppCompatActivity(), PeerListAdapterInterface {
         // wifiP2pManager.stopPeerDiscovery(channel, /* ActionListener */)
     }
 
+    private fun updateUI() {
+        //The rules for updating the UI are as follows:
+        // IF the WFD adapter is NOT enabled then
+        //      Show UI that says turn on the wifi adapter
+        // ELSE IF there is NO WFD connection then i need to show a view that allows the user to either
+        // 1) create a group with them as the group owner OR
+        // 2) discover nearby groups
+        // ELSE IF there are nearby groups found, i need to show them in a list
+        // ELSE IF i have a WFD connection i need to show a chat interface where i can send/receive messages
+        val wfdAdapterErrorView: ConstraintLayout = findViewById(R.id.clWfdAdapterDisabled)
+        wfdAdapterErrorView.visibility = if (!wfdAdapterEnabled) View.VISIBLE else View.GONE
+
+        val wfdNoConnectionView: ConstraintLayout = findViewById(R.id.clNoWifiDirectConnection)
+        wfdNoConnectionView.visibility =
+            if (wfdAdapterEnabled && !wfdHasConnection) View.VISIBLE else View.GONE
+
+        val rvPeerList: RecyclerView = findViewById(R.id.rvPeerListing)
+        rvPeerList.visibility =
+            if (wfdAdapterEnabled && !wfdHasConnection && hasDevices) View.VISIBLE else View.GONE
+
+        val wfdConnectedView: ConstraintLayout = findViewById(R.id.clHasConnection)
+        wfdConnectedView.visibility = if (wfdHasConnection) View.VISIBLE else View.GONE
+    }
+    override fun onContent(content: ContentModel) {
+        runOnUiThread {
+            chatListAdapter?.addItemToEnd(content)
+        }
+    }
     override fun onPeerClicked(peer: WifiP2pDevice) {
-        // Open ChatActivity and pass the attendee's device address
-        val intent = Intent(this, ChatActivity::class.java)
-        intent.putExtra("ATTENDEE_DEVICE_ADDRESS", peer.deviceAddress)
-        startActivity(intent)
+        wfdManager?.connectToPeer(peer)
     }
 
     fun addAttendee(attendee: WifiP2pDevice) {

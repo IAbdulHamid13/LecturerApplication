@@ -85,7 +85,7 @@ class WifiDirectManager(
     }
 
     @SuppressLint("MissingPermission") //This is the new create group function
-    fun requestGroupInfo() {
+    fun requestGroupInfo(): WifiP2pGroup? {
         manager.requestGroupInfo(channel) { groupInfo ->
             if (groupInfo == null) {
                 // No group exists, so we can create a new one
@@ -102,6 +102,7 @@ class WifiDirectManager(
                 Log.d("WFDManager", "A group already exists. No need to create a new one.")
             }
         }
+        return groupInfo
     }
  
     @SuppressLint("MissingPermission")
