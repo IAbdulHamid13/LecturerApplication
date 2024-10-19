@@ -195,7 +195,6 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
         wfdNoConnectionView.visibility = View.GONE
     }
 
-
     override fun onContent(content: ContentModel) {
         runOnUiThread {
             chatListAdapter?.addItemToEnd(content)
