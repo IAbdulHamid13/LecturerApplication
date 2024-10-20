@@ -46,6 +46,7 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
     private var server: Server? = null
     private var client: Client? = null
     private var deviceIp: String = ""
+    private var isClickingOnPeer = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +71,7 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
         val rvChatList: RecyclerView = findViewById(R.id.rvChat)
         rvChatList.adapter = chatListAdapter
         rvChatList.layoutManager = LinearLayoutManager(this)
+        isClickingOnPeer = false
     }
 
     override fun onResume() {
@@ -113,12 +115,13 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
 
         val rvPeerList: RecyclerView = findViewById(R.id.rvPeerListing)
         rvPeerList.visibility =
-            if (wfdAdapterEnabled && !wfdHasConnection && hasDevices) View.VISIBLE else View.GONE
+            if (wfdAdapterEnabled && wfdHasConnection && hasDevices) View.VISIBLE else View.GONE
         val wfdConnectedView: ConstraintLayout = findViewById(R.id.clHasConnection)
-        wfdConnectedView.visibility = View.GONE
+        wfdConnectedView.visibility = if (isClickingOnPeer) View.VISIBLE else View.GONE
 
         val lecturerActivity: ConstraintLayout = findViewById(R.id.lecturer_activity)
-        lecturerActivity.visibility = if (wfdManager?.groupInfo == null) View.GONE else View.VISIBLE
+        lecturerActivity.visibility =
+            if ((wfdManager?.groupInfo == null && !isClickingOnPeer) || (wfdManager?.groupInfo != null && isClickingOnPeer)) View.GONE else View.VISIBLE
     }
 
     fun sendMessage(view: View) {
@@ -128,7 +131,6 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
         etMessage.text.clear()
         client?.sendMessage(content)
         chatListAdapter?.addItemToEnd(content)
-
     }
 
     override fun onWiFiDirectStateChanged(isEnabled: Boolean) {
@@ -180,19 +182,9 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
     }
 
     override fun onPeerClicked(peer: WifiP2pDevice) {
-        // Attempt to connect to the peer
         wfdManager?.connectToPeer(peer)
-
-        // Once connection is attempted, update the UI to show the connection layout
-        val wfdConnectedView: ConstraintLayout = findViewById(R.id.clHasConnection)
-        wfdConnectedView.visibility = View.VISIBLE
-
-        // Optionally hide other views if needed, e.g., the peer listing or no connection views
-        val rvPeerList: RecyclerView = findViewById(R.id.rvPeerListing)
-        rvPeerList.visibility = View.GONE
-
-        val wfdNoConnectionView: ConstraintLayout = findViewById(R.id.clNoWifiDirectConnection)
-        wfdNoConnectionView.visibility = View.GONE
+        isClickingOnPeer = true
+        updateUI()
     }
 
     override fun onContent(content: ContentModel) {
@@ -201,4 +193,8 @@ class CommunicationActivity : AppCompatActivity(), WifiDirectInterface, PeerList
         }
     }
 
+    fun onBackPressed(view: View) {
+        isClickingOnPeer = false
+        updateUI()
+    }
 }

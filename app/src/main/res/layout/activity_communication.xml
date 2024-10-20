@@ -94,9 +94,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/lecturer_activity"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/lecturer_activity">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/classNetworkLabel"
@@ -161,13 +161,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvChat"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/llChatSend"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/llChatSend"
